@@ -1,0 +1,24 @@
+todo implement:
+
+- sieve 
+- more efficient sieve by multiplying base with primorial
+- fancy strategy where primality testing starts in the middle of a chain,
+  in a divide-and-conquer manner (verify that a chain isn't good enough with
+  as few primality tests as possible)
+- minimize hash
+- serial optimization
+- low level optimization (efficient assembly code that utilizes instruction
+  set)
+- parallelism
+- good parallelism (load balancing)
+- gpu support with opencl! (both as gpu-only version and hybrid)
+- good load balancing on hybrid cpu/gpu version
+- autotuning of parameters
+- hardcode good parameters
+
+tentative roadmap
+
+02: includes sieve
+03: includes primorial
+04: include fancy strategy
+05: minimize hash
