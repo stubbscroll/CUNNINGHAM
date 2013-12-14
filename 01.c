@@ -1,7 +1,7 @@
 /* extremely naive implementation of a program that finds cunningham
-   chains of all kinds such that the base prime is B-1 or B+1 where B
-   is a sha256 hash. after trying the first 1 million multiples of the hash,
-   another hash is generated. also, crude stats
+   chains of all kinds such that the base prime is B-1 or B+1 where B is a
+   multiple of a sha256 hash. after trying the first 1 million multiples of
+   the hash, another hash is generated. also, crude stats
    nb, requires external library gmp */
 
 #include <stdio.h>
@@ -34,7 +34,6 @@ mpz_t power;
 mpz_t temp;
 
 /* fermat test with base 2, return 0 if composite */
-/* lifchitz http://www.primenumbers.net/Henri/us/NouvTh1us.htm */
 int fermattest(mpz_t p) {
 	mpz_powm(res,two,p,p);
 	/* 2^p mod p != 2 means p is certainly composite */
@@ -123,7 +122,7 @@ fail:
 
 void work() {
 	int i,l1,l2,l3;
-	unsigned char s[10],*p;
+	unsigned char s[10],p[32];
 	char t[65];
 	double start=gettime(),f1,f2,tid;
 	mpz_t base,origin;
@@ -133,7 +132,7 @@ void work() {
 	while(1) {
 		/* take sha-256 of a random string of 10 chars */
 		for(i=0;i<10;i++) s[i]=rand()&255;
-		p=sha256(s,10);
+		sha256(s,10,p);
 		for(i=0;i<32;i++) t[i*2]=hex(p[i]>>4),t[i*2+1]=hex(p[i]&15);
 		t[64]=0;
 		printf("try hash %s\n",t);
