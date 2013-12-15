@@ -6,6 +6,7 @@ the previous one
 versions so far:
 
 01 - find chains by stupid brute force
-02 - will use a simple sieve
+02 - use simple sieve to eliminate composite numbers with small prime factors
+03 - multiply origin by primorial to increase number of primes in sieve
 
 warning, external dependencies: gmp (gnu multiprecision library)

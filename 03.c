@@ -1,14 +1,10 @@
-/* find cunningham chains by using a simple sieve. the purpose of the sieve is
-   to identify composite numbers with much less work than doing explicit
-   primality testing.
-   each element in the sieve corresponds to a multiple of a sha256 hash.
-	 mark elements that are multiples of small primes.
-   whatever remains are prime candidates, check potential chains with proper
-   probabilistic prime check. all elements of a chain must fit in the sieve, so
-   if the origin is the first number in the sieve, then the longest chain we
-   can find is around log_2(SIEVESIZE). this version doesn't even try to find
-   chains of length less than 3, and as an unfortunate side effect, doesn't find
-   bi-twin chains of length less than 6.
+/* multiply hash with primorial.
+   this increases the number of candidates greatly, causing the chain check
+   phase to take much longer. however, this also increases the number of
+   chains found per time spent.
+   this version only looks for chains of length 4 or more. it only finds
+   3-chains as a result of failing primality tests for 4-chains, hence it will
+   find less 3-chains than the previous version.
 
    tunable parameters:
    SIEVESIZE - smaller means we check smaller numbers in average, but the
@@ -20,6 +16,11 @@
      calculation of modular inverse with ints) and a variable cost (sweep over
      sieve array and mark all multiples of prime) which costs less for larger
      primes.
+   PRIMORIAL - size of largest prime to multiply in. higher number results in
+     more chain candidates (more prime numbers in sieve), but it causes the
+     numbers to be tested to be larger. increaing the primorial past a certain
+     limit gives diminishing returns - the increase in the number of candidates
+     goes down, while the origin increases faster.
 
    naturally, each version must be tuned from scratch. SIEVESIZE is very
    dependent on the desired chain length, and probably also dependent on
@@ -35,8 +36,9 @@
 
 #define SIEVESIZE 1000000 /* size of each sieve (in number of elements) */
 #define MAXPRIME 150000    /* max prime to check in sieve phase */
+#define PRIMORIAL 31
 
-#define MINCHAIN 3                /* minimum length chain to look for */
+#define MINCHAIN 4                /* minimum length chain to look for */
 #define MINTWIN ((MINCHAIN+1)>>1) /* minimum bi-twin chain to look for */
 
 typedef long long ll;
@@ -184,27 +186,32 @@ void work() {
 	ll tried=0;
 	int i,p,a,j,p2,l1,l2,l3;
 	double start=gettime(),tid,f1,f2;
-	unsigned char s[10],u[32];
+	unsigned char s[20],u[32];
 	char t[65];
 	mpz_t origin,om;
 	mpz_init(origin);
 	mpz_init(om);
 	genprimes();
 	memset(num,0,sizeof(num));
+	strcpy((char *)s,"sopp");
 	while(1) {
-		/* take sha-256 of a random string of 10 chars */
-		for(i=0;i<10;i++) s[i]=rand()&255;
-		sha256(s,10,u);
+		/* take sha-256 of a string with counter appended */
+		for(i=0;i<8;i++) s[i+4]=(tried>>(i*8))&255;
+		sha256(s,12,u);
 		for(i=0;i<32;i++) t[i*2]=hex(u[i]>>4),t[i*2+1]=hex(u[i]&15);
 		t[64]=0;
 		tried++;
 		mpz_set_str(origin,t,16);
+		/* multiply primorial */
+		for(i=0;prim[i]<=PRIMORIAL;i++)
+			if(mpz_fdiv_ui(origin,prim[i])) mpz_mul_ui(origin,origin,prim[i]);
 		/* init sieve, all elements start as "probably prime" */
 		memset(sieveminus,0,SIEVESIZE);
 		memset(sieveplus,0,SIEVESIZE);
 		mpz_sub_ui(om,origin,1);
 		/* mark multiples of small primes */
-		for(i=1;i<pn;i++) if((j=(int)mpz_fdiv_ui(origin,p=prim[i]))) {
+		for(i=0;prim[i]<=PRIMORIAL;i++);
+		for(;i<pn;i++) if((j=(int)mpz_fdiv_ui(origin,p=prim[i]))) {
 			/* find lowest k>=1 such that k*origin-1 = 0 (mod p) which is equivalent
 			   to the inverse of origin mod p */
 			a=j=inverse(j,p);
@@ -227,10 +234,10 @@ void work() {
 		for(i=1;i<SIEVESIZE/p2;i++) {
 			l1=l2=f1=f2=0;
 			/* don't bother to check unless chain is guaranteed to be of length 3
-			   (warning, if is hardcoded to 3 - doesn't use macro */
-			if(((i&1) || sieveminus[i>>1]) && !sieveminus[i] && !sieveminus[i<<1] && !sieveminus[i<<2])
+			   (warning, if is hardcoded to 4 - doesn't use macro */
+			if(((i&1) || sieveminus[i>>1]) && !sieveminus[i] && !sieveminus[i<<1] && !sieveminus[i<<2] && !sieveminus[i<<3])
 				l1=findchain1(i,origin,&f1);
-			if(((i&1) || sieveplus[i>>1]) && !sieveplus[i] && !sieveplus[i<<1] && !sieveplus[i<<2])
+			if(((i&1) || sieveplus[i>>1]) && !sieveplus[i] && !sieveplus[i<<1] && !sieveplus[i<<2] && !sieveplus[i<<3])
 				l2=findchain2(i,origin,&f2);
 			if(l1>l2) l3=l2+l2;
 			else if(l1<l2) l3=l1+l1;
@@ -244,7 +251,7 @@ void work() {
 			   (which is wrong, since it changes the distribution) */
 			if(l3>4) printf("found chain type 3 length %.12f\n",l3+(f1+f2)*.5);
 		}
-		if(tried%100==0) {
+		if(tried%50==0) {
 			tid=gettime();
 			puts("===============================================================================");
 			printf("after trying %I64d hashes:\n",tried);

@@ -1,18 +1,26 @@
 results on i7-2600k with O3 (on a rather busy CPU)
 
-the current version (02) is still so far behind jhprimeminer that i can't
-easily measure how much slower it is.
-
+it's hard to compare 03 to current miners as they look for different length
+chains, but my program is still much slower
 ==============================================================================
 01 - stupid brute force version
 
   3ch/h: 100.76 [247 274 0]
   4ch/h:   1.35 [1 4 2]
 ==============================================================================
-02 - simple sieve (speedup from 01: around 320x)
+02 - simple sieve (speedup from 01: around 360x)
 
   3ch/h:  36341.15 [12020 11881 0]
   4ch/h:    507.84 [182 150 2]
   5ch/h:     10.64 [3 4 0]
   6ch/h:      1.52 [0 1 0]
+==============================================================================
+03 - simple sieve with primorial (speedup from 02: 7-11x)
+
+  3ch/h:  33094.62 [40111 39940 0]
+  4ch/h:   3571.53 [4323 4297 19]
+  5ch/h:    118.65 [140 147 0]
+  6ch/h:      2.89 [3 4 0]
+===============================================================================
+04 fancy check todo
 ==============================================================================
