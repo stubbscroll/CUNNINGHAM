@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 /* naive implementation of sha-256 */
-#define MAXSTR 1000000
+#define MAXSTR 1000
 #define ROR(v,len) ((v<<(32-len))+(v>>len))
 #define OUTPUT(a,ix,v) a[ix]=(v)>>24; a[ix+1]=((v)>>16)&255; a[ix+2]=((v)>>8)&255; a[ix+3]=(v)&255
 void sha256(unsigned char *s,int len,unsigned char *out) {
@@ -17,7 +17,7 @@ void sha256(unsigned char *s,int len,unsigned char *out) {
 		0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
 		0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f,
 		0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
-	static unsigned char msg[MAXSTR];
+	unsigned char msg[MAXSTR];
 	int i,z;
 	unsigned int a,b,c,d,e,f,g,h,s0,s1,ch,temp1,temp2,maj,n=len<<3;
 	h0=0x6a09e667; h1=0xbb67ae85; h2=0x3c6ef372; h3=0xa54ff53a;

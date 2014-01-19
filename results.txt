@@ -1,7 +1,7 @@
-results on i7-2600k with O3 (on a rather busy CPU)
+results on i7-2600k with O3 (with various load)
 
-it's hard to compare 03 to current miners as they look for different length
-chains, but my program is still much slower
+it's hard to compare 04 to current miners as they look for different length
+chains (and current miners are parallel), but my program seems to be slower.
 ==============================================================================
 01 - stupid brute force version
 
@@ -22,5 +22,13 @@ chains, but my program is still much slower
   5ch/h:    118.65 [140 147 0]
   6ch/h:      2.89 [3 4 0]
 ===============================================================================
-04 fancy check todo
+04 - minimize primality checks (speedup from 03: 1.6x)
+
+  5ch/h:    197.82 [827 858 0]
+  6ch/h:     12.21 [48 56 0]
+  7ch/h:      0.12 [1 0 0]
+
+time spent: 0.8224 sieve, 0.1776 primality testing
+==============================================================================
+05 - parallel
 ==============================================================================
