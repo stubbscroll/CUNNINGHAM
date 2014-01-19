@@ -2,6 +2,8 @@ results on i7-2600k with O3 (with various load)
 
 it's hard to compare 04 to current miners as they look for different length
 chains (and current miners are parallel), but my program seems to be slower.
+
+warning, euler-lifchitz test not included below...
 ==============================================================================
 01 - stupid brute force version
 
@@ -30,5 +32,24 @@ chains (and current miners are parallel), but my program seems to be slower.
 
 time spent: 0.8224 sieve, 0.1776 primality testing
 ==============================================================================
-05 - parallel
+05 - naive parallelism (2 threads)
+
+  5ch/h:    468.93 [44 37 0]
+  6ch/h:     34.74 [3 3 0]
+
+time spent: 0.6825 sieve, 0.3175 primality testing
+==============================================================================
+05 - naive parallelism (4 threads)
+
+  5ch/h:    671.81 [76 69 0]
+  6ch/h:     32.43 [3 4 0]
+
+time spent: 0.7409 sieve, 0.2591 primality testing
+==============================================================================
+05 - naive parallelism (6 threads) (sieve stage doesn't scale)
+
+  5ch/h:    372.03 [38 30 0]
+  6ch/h:     32.83 [3 3 0]
+
+time spent: 0.8730 sieve, 0.1270 primality testing
 ==============================================================================

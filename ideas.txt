@@ -1,11 +1,10 @@
 todo implement:
 
+- better parallelism
 - minimize hash
 - serial optimization
 - low level optimization (efficient assembly code that utilizes instruction
   set)
-- parallelism
-- good parallelism (load balancing)
 - gpu support with opencl! (both as gpu-only version and hybrid)
 - good load balancing on hybrid cpu/gpu version
 - autotuning of parameters
@@ -13,4 +12,5 @@ todo implement:
 
 tentative roadmap
 
-05: includes parallelism
+05: include parallelism, each thread works on separate sieve
+06: improved parallelism, all threads works on the same sieve
